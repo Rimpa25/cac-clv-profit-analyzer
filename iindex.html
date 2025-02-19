@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Acquisition Cost (CAC) & Customer Lifetime Value (CLV) Profitability Analyzer</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            color: #333;
+            text-align: center;
+            padding: 30px;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #2e4a8e;
+            font-size: 28px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        label,
+        select,
+        input,
+        button {
+            margin: 12px 0;
+            display: block;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        input,
+        select {
+            background-color: #f5f5f5;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .alert-danger {
+            background: #ff5252;
+            color: white;
+        }
+
+        .alert-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .alert-warning {
+            background: #ffeb3b;
+            color: #333;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Customer Acquisition Cost (CAC) & Customer Lifetime Value (CLV) Profitability Analyzer</h2>
+
+        <label for="marketingCost">Total Marketing & Sales Cost (in selected currency):</label>
+        <input type="number" id="marketingCost" placeholder="Enter total cost">
+
+        <label for="newCustomers">Number of New Customers Acquired:</label>
+        <input type="number" id="newCustomers" placeholder="Enter customer count">
+
+        <label for="avgRevenue">Average Revenue per Customer:</label>
+        <input type="number" id="avgRevenue" placeholder="Enter average revenue per customer">
+
+        <label for="customerLifespan">Average Customer Lifespan (in years):</label>
+        <input type="number" id="customerLifespan" placeholder="Enter lifespan in years">
+
+        <label for="adCost">Breakdown of Marketing Costs:</label>
+        <input type="number" id="adCost" placeholder="Advertising Cost">
+        <input type="number" id="salesTeamCost" placeholder="Sales Team Cost">
+        <input type="number" id="referralCost" placeholder="Referral Cost">
+
+        <label for="currency">Select Currency:</label>
+        <select id="currency">
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="AED">AED (د.إ)</option>
+            <option value="JPY">JPY (¥)</option>
+            <option value="CAD">CAD (C$)</option>
+            <option value="AUD">AUD (A$)</option>
+            <option value="CNY">CNY (¥)</option>
+            <option value="KRW">KRW (₩)</option>
+            <option value="TRY">TRY (₺)</option>
+        </select>
+
+        <label for="timePeriod">Time Period:</label>
+        <input type="text" id="timePeriod" placeholder="E.g., Q1 2024, Jan - June">
+
+        <button onclick="calculateMetrics()">Analyze Profitability</button>
+
+        <h3 id="result"></h3>
+        <h3 id="clvResult"></h3>
+        <div id="profitabilityWarning" class="alert"></div>
+    </div>
+
+    <div class="footer">
+        <p>Powered by <a href="https://github.com/rimpa-kar" target="_blank">Rimpa Kar</a>. All rights reserved.</p>
+    </div>
+
+    <script>
+        function calculateMetrics() {
+            let cost = parseFloat(document.getElementById('marketingCost').value);
+            let customers = parseInt(document.getElementById('newCustomers').value);
+            let avgRevenue = parseFloat(document.getElementById('avgRevenue').value);
+            let lifespan = parseFloat(document.getElementById('customerLifespan').value);
+            let currency = document.getElementById('currency').value;
+
+            if (isNaN(cost) || isNaN(customers) || customers <= 0 || isNaN(avgRevenue) || isNaN(lifespan) || lifespan <= 0) {
+                document.getElementById('result').innerHTML = "⚠️ Please enter valid values.";
+                return;
+            }
+
+            let cac = cost / customers;
+            let clv = avgRevenue * lifespan;
+            document.getElementById('result').innerHTML = `Customer Acquisition Cost (CAC): ${currency} ${cac.toFixed(2)} per customer`;
+            document.getElementById('clvResult').innerHTML = `Customer Lifetime Value (CLV): ${currency} ${clv.toFixed(2)}`;
+
+            let warningDiv = document.getElementById('profitabilityWarning');
+            if (cac > clv) {
+                warningDiv.innerHTML = "❌ Warning: CAC is greater than CLV! This is not a sustainable strategy.";
+                warningDiv.className = "alert alert-danger";
+            } else if (cac < 0.2 * clv) {
+                warningDiv.innerHTML = "✅ Excellent! Your CAC is below 20% of CLV, indicating a highly efficient strategy.";
+                warningDiv.className = "alert alert-success";
+            } else {
+                warningDiv.innerHTML = "⚠️ Your CAC is within an acceptable range.";
+                warningDiv.className = "alert alert-warning";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
